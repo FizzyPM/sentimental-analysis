@@ -1,6 +1,21 @@
-import pandas as pd
 import re
+import nltk
 import emoji
+import pandas as pd
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+nltk.download('punkt')
+nltk.download('stopwords')
+
+
+def remove_stopwords(tweet):
+    stop_words = set(stopwords.words('english'))
+    word_tokens = word_tokenize(tweet)
+    filtered_sentence = []
+    for w in word_tokens:
+        if w not in stop_words:
+            filtered_sentence.append(w)
+    return filtered_sentence
 
 
 def handle_emojis(tweet):
@@ -32,26 +47,31 @@ def preprocess_tweet(tweet):
     tweet = re.sub(r'@[\S]+', '', tweet)
     # Replaces #hashtag with hashtag
     tweet = re.sub(r'#(\S+)', r' \1 ', tweet)
-    # Remove not alphanumeric symbols white spaces
-    tweet = re.sub(r'[^\w]', ' ', tweet)
     # Remove RT (retweet)
     tweet = re.sub(r'\brt\b', '', tweet)
     # Replace 2+ dots with space
     tweet = re.sub(r'\.{2,}', ' ', tweet)
-    # Strip space, " and ' from tweet
-    tweet = tweet.strip(' "\'')
     # Replace emojis with either EMO_POS or EMO_NEG
     tweet = handle_emojis(tweet)
+    # Strip space, " and ' from tweet
+    tweet = tweet.strip(' "\'')
     # Replace multiple spaces with a single space
     tweet = re.sub(r'\s+', ' ', tweet)
+    # funnnnny --> funny
+    tweet = re.sub(r'(.)\1+', r'\1\1', tweet)
+    # Removing punctuations
+    tweet = re.sub(r'[^\w\s]', '', tweet)
+    # Removing numbers
+    tweet = re.sub("^\d+\s|\s\d+\s|\s\d+$", '', tweet)
     return tweet
 
 
 df = pd.read_table('./datasets/test-A-input.txt', sep='\t', names=('A', 'B', 'C', 'D', 'E', 'F'))
-# f = open("preprocessed.txt", "w")
+# f = open("preprocessed-A.txt", "w")
 # print(df.head())
 # print(df.iloc[:, 5])
 for row in (df.iloc[:, 5].head()):
     if (row != 'Not Available'):
         row = preprocess_tweet(row)
+        row = remove_stopwords(row)
         print(row)
