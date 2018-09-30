@@ -5,8 +5,13 @@ import emoji
 # from autocorrect import spell
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk.stem.porter import PorterStemmer
 nltk.download('punkt')
 nltk.download('stopwords')
+nltk.download('wordnet')
+porter_stemmer = PorterStemmer()
+wordnet_lemmatizer = WordNetLemmatizer()
 
 
 def remove_stopwords(tweet):
@@ -99,10 +104,10 @@ def expandContractions(text):
     return c_re.sub(replace, text)
 
 
-def unique_list(l):
-    ulist = []
-    [ulist.append(x) for x in l if x not in ulist]
-    return ulist
+# def unique_list(l):
+#     ulist = []
+#     [ulist.append(x) for x in l if x not in ulist]
+#     return ulist
 
 
 # def autocorrect(l):
@@ -119,11 +124,14 @@ def unique_list(l):
 #         row = replace_slang(row)
 #         row = expandContractions(row)
 #         row = preprocess_tweet(row)
-#         row = ' '.join(unique_list(row.split()))
+#         for w in row.split():
+#             row = row.replace(w, wordnet_lemmatizer.lemmatize(w))
+#         for w in row.split():
+#             row = row.replace(w, porter_stemmer.stem(w))
 #         row = remove_stopwords(row)
+#         # res = ' '.join(row)
 #         # row = autocorrect(row)
-#         res = ' '.join(row)
-#         print(res)
+#         print(row)
 
 df = open("./datasets/test-A-input.txt", "r")
 f = open("preprocessed-A.txt", "w")
@@ -136,11 +144,12 @@ for line in df:
         row = replace_slang(row)
         row = expandContractions(row)
         row = preprocess_tweet(row)
-        row = ' '.join(unique_list(row.split()))
+        for w in row.split():
+            row = row.replace(w, wordnet_lemmatizer.lemmatize(w))
+        for w in row.split():
+            row = row.replace(w, porter_stemmer.stem(w))
         row = remove_stopwords(row)
         res = ' '.join(row)
-        # print(res)
-        # row = autocorrect(row)
         f.write(res + "\n")
 f.close()
 
@@ -155,10 +164,11 @@ for line in df2:
         row = replace_slang(row)
         row = expandContractions(row)
         row = preprocess_tweet(row)
-        row = ' '.join(unique_list(row.split()))
+        for w in row.split():
+            row = row.replace(w, wordnet_lemmatizer.lemmatize(w))
+        for w in row.split():
+            row = row.replace(w, porter_stemmer.stem(w))
         row = remove_stopwords(row)
         res = ' '.join(row)
-        # print(res)
-        # row = autocorrect(row)
         f2.write(res + "\n")
 f2.close()
