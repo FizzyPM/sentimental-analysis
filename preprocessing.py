@@ -133,8 +133,11 @@ def expandContractions(text):
 #         # row = autocorrect(row)
 #         print(row)
 
-df = open("./datasets/test-A-input.txt", "r")
-f = open("preprocessed-A.txt", "w")
+# --------------------------- PREPROCESSING TESTING DATA SET A -----------------------------
+print("PREPROCESSING TESTING DATA SET A")
+
+df = open("./test-datasets/test-A-input.txt", "r")
+f = open("./preprocessed-data/preprocessed-test-A.txt", "w")
 for line in df:
     cols = line.split("\t")
     row = cols[5]
@@ -152,9 +155,13 @@ for line in df:
         res = ' '.join(row)
         f.write(res + "\n")
 f.close()
+df.close()
 
-df2 = open("./datasets/test-B-input.txt", "r")
-f2 = open("preprocessed-B.txt", "w")
+# --------------------------- PREPROCESSING TESTING DATA SET B -----------------------------
+print("PREPROCESSING TESTING DATA SET B")
+
+df2 = open("./test-datasets/test-B-input.txt", "r")
+f2 = open("./preprocessed-data/preprocessed-test-B.txt", "w")
 for line in df2:
     cols = line.split("\t")
     row = cols[3]
@@ -172,3 +179,51 @@ for line in df2:
         res = ' '.join(row)
         f2.write(res + "\n")
 f2.close()
+df2.close()
+
+# --------------------------- PREPROCESSING TRAINING DATA SET A -----------------------------
+print("PREPROCESSING TRAINING DATA SET A")
+
+data = {}
+df3 = open("./train-datasets/train-A.txt", "r")
+for i in df3:
+    cols = i.split("\t")
+    tweet = cols[5]
+    if(tweet != 'Not Available\n'):
+        tweet = replace_slang(tweet)
+        tweet = expandContractions(tweet)
+        tweet = preprocess_tweet(tweet)
+        for w in tweet.split():
+            tweet = tweet.replace(w, wordnet_lemmatizer.lemmatize(w))
+        for w in tweet.split():
+            tweet = tweet.replace(w, porter_stemmer.stem(w))
+        tweet = remove_stopwords(tweet)
+        res = ' '.join(tweet)
+        data[res] = cols[4]
+df3.close()
+f3 = open("./preprocessed-data/preprocessed-train-A.txt", "w")
+for key, value in data.items():
+    f3.write(value + "\t" + key + "\n")
+f3.close()
+
+# --------------------------- PREPROCESSING TRAINING DATA SET B -----------------------------
+print("PREPROCESSING TRAINING DATA SET B")
+
+df4 = open("./train-datasets/train-B.txt", "r")
+f4 = open("./preprocessed-data/preprocessed-train-B.txt", "w")
+for line in df4:
+    cols = line.split("\t")
+    row = cols[3]
+    if(row != 'Not Available\n'):
+        row = replace_slang(row)
+        row = expandContractions(row)
+        row = preprocess_tweet(row)
+        for w in row.split():
+            row = row.replace(w, wordnet_lemmatizer.lemmatize(w))
+        for w in row.split():
+            row = row.replace(w, porter_stemmer.stem(w))
+        row = remove_stopwords(row)
+        res = ' '.join(row)
+        f4.write(cols[2] + "\t" + res + "\n")
+f4.close()
+df4.close()
