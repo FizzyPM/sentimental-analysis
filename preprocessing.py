@@ -73,7 +73,7 @@ def preprocess_tweet(tweet):
 
 
 def replace_slang(text):
-    with open('slang.txt') as file:
+    with open('./extras/slang.txt') as file:
         slang_map = dict(map(str.strip, line.partition('\t')[::2]) for line in file if line.strip())
 
     def replace(match):
@@ -133,59 +133,10 @@ def expandContractions(text):
 #         # row = autocorrect(row)
 #         print(row)
 
-# --------------------------- PREPROCESSING TESTING DATA SET A -----------------------------
-print("PREPROCESSING TESTING DATA SET A")
-
-df = open("./test-datasets/test-A-input.txt", "r")
-f = open("./preprocessed-data/preprocessed-test-A.txt", "w")
-for line in df:
-    cols = line.split("\t")
-    row = cols[5]
-    if(row != 'Not Available\n'):
-        for i in range(5):
-            f.write(cols[i] + "\t")
-        row = replace_slang(row)
-        row = expandContractions(row)
-        row = preprocess_tweet(row)
-        for w in row.split():
-            row = row.replace(w, wordnet_lemmatizer.lemmatize(w))
-        for w in row.split():
-            row = row.replace(w, porter_stemmer.stem(w))
-        row = remove_stopwords(row)
-        res = ' '.join(row)
-        f.write(res + "\n")
-f.close()
-df.close()
-
-# --------------------------- PREPROCESSING TESTING DATA SET B -----------------------------
-print("PREPROCESSING TESTING DATA SET B")
-
-df2 = open("./test-datasets/test-B-input.txt", "r")
-f2 = open("./preprocessed-data/preprocessed-test-B.txt", "w")
-for line in df2:
-    cols = line.split("\t")
-    row = cols[3]
-    if(row != 'Not Available\n'):
-        for i in range(3):
-            f2.write(cols[i] + "\t")
-        row = replace_slang(row)
-        row = expandContractions(row)
-        row = preprocess_tweet(row)
-        for w in row.split():
-            row = row.replace(w, wordnet_lemmatizer.lemmatize(w))
-        for w in row.split():
-            row = row.replace(w, porter_stemmer.stem(w))
-        row = remove_stopwords(row)
-        res = ' '.join(row)
-        f2.write(res + "\n")
-f2.close()
-df2.close()
-
-# --------------------------- PREPROCESSING TRAINING DATA SET A -----------------------------
-print("PREPROCESSING TRAINING DATA SET A")
+print("PREPROCESSING DATA")
 
 data = {}
-df3 = open("./train-datasets/train-A.txt", "r")
+df3 = open("./datasets/data.txt", "r")
 for i in df3:
     cols = i.split("\t")
     tweet = cols[5]
@@ -201,16 +152,13 @@ for i in df3:
         res = ' '.join(tweet)
         data[res] = cols[4]
 df3.close()
-f3 = open("./preprocessed-data/preprocessed-train-A.txt", "w")
+f3 = open("preprocessed-data.txt", "w")
 for key, value in data.items():
     f3.write(value + "\t" + key + "\n")
-f3.close()
+# f3.close()
 
-# --------------------------- PREPROCESSING TRAINING DATA SET B -----------------------------
-print("PREPROCESSING TRAINING DATA SET B")
-
-df4 = open("./train-datasets/train-B.txt", "r")
-f4 = open("./preprocessed-data/preprocessed-train-B.txt", "w")
+df4 = open("./datasets/data(1).txt", "r")
+# f4 = open("./preprocessed-data/preprocessed-data(1).txt", "w")
 for line in df4:
     cols = line.split("\t")
     row = cols[3]
@@ -224,6 +172,7 @@ for line in df4:
             row = row.replace(w, porter_stemmer.stem(w))
         row = remove_stopwords(row)
         res = ' '.join(row)
-        f4.write(cols[2] + "\t" + res + "\n")
-f4.close()
+        f3.write(cols[2] + "\t" + res + "\n")
+f3.close()
 df4.close()
+print("DONE")
